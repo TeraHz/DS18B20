@@ -23,13 +23,14 @@
 
 #include "DS18B20.h"
 
-DS18B20::DS18B20(char* address) :
-		address_(address) {
+DS18B20::DS18B20(char* address) {
+	address_ = strdup(address);
 	unit_ = CELCIUS;
 	char path[47]; // path should be 46 chars
 	snprintf(path, 46, "%s%s%s", BUS, address_, TEMPFILE);
 	devFile = fopen(path, "r");
 	if (devFile == NULL) {
+		printf("Count not open %s\n", path);
 		throw errno;
 	}
 }
@@ -52,13 +53,13 @@ float DS18B20::getTemp() {
 			//This will likely break when/if they make a change
 			char* pch = strtok(filecontents, "\n"); // get first line
 			if (pch != NULL) {
-				if (strstr(pch, "YES") != NULL){ // if we have a YES in the crc proceed
+				if (strstr(pch, "YES") != NULL) { // if we have a YES in the crc proceed
 					pch = strtok(NULL, "\n"); // get second line
 					if (pch != NULL) {
 						char * dpch = strstr(pch, "="); // get the location of the temperature, probably constant but still...
-						if (dpch != NULL){
-							char tmp[6];
-							strncpy(tmp, dpch+1, 5); // store 5 digit temperature
+						if (dpch != NULL) {
+							char tmp[] = "00000";
+							strncpy(tmp, dpch + 1, 5); // store 5 digit temperature
 							temp = (float) atoi(tmp) / 1000.0; // we made it!
 						}
 					}
@@ -68,20 +69,20 @@ float DS18B20::getTemp() {
 			delete[] filecontents;
 		}
 	}
-	if (unit_ == CELCIUS)
+	if (unit_ == CELCIUS) {
 		return temp;
-	else
+	} else
 		return CtoF(temp);
 }
 
-uint8_t DS18B20::getUnits(){
+uint8_t DS18B20::getUnits() {
 	return unit_;
 }
 
-void DS18B20::setUnits(uint8_t u){
+void DS18B20::setUnits(uint8_t u) {
 	unit_ = u;
 }
 
-float DS18B20::CtoF(float temp){
-	return temp*1.8+32;
+float DS18B20::CtoF(float temp) {
+	return temp * 1.8 + 32;
 }
