@@ -26,23 +26,20 @@
 DS18B20::DS18B20(char* address) {
 	address_ = strdup(address);
 	unit_ = CELCIUS;
-	char path[47]; // path should be 46 chars
 	snprintf(path, 46, "%s%s%s", BUS, address_, TEMPFILE);
-	devFile = fopen(path, "r");
-	if (devFile == NULL) {
-		printf("Count not open %s\n", path);
-		throw errno;
-	}
 }
 
 DS18B20::~DS18B20() {
-	fclose(devFile);
 }
 
 float DS18B20::getTemp() {
+	FILE *devFile = fopen(path, "r");
+	if (devFile == NULL) {
+		printf("Count not open %s\n", path);
+		perror("\n");
+	}
 	float temp = -1;
 	if (devFile != NULL) {
-		  rewind (devFile);
 		if (!ferror(devFile)) {
 			unsigned int tempInt;
 			char crcConf[5];
@@ -53,6 +50,8 @@ float DS18B20::getTemp() {
 			}
 		}
 	}
+	fclose(devFile);
+
 	if (unit_ == CELCIUS) {
 		return temp;
 	} else

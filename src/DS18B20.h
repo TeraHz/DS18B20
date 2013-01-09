@@ -45,7 +45,8 @@ public:
 private:
 	uint8_t unit_;
 	char* address_;
-	FILE *devFile;
+	char path[47]; // path should be 46 chars
+
 };
 
 #endif /* DS18B20_H_ */
