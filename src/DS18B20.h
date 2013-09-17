@@ -36,7 +36,7 @@
 
 class DS18B20 {
 public:
-	DS18B20(char* address);
+	DS18B20(const char* address);
 	virtual ~DS18B20();
 	uint8_t getUnits();
 	void setUnits(uint8_t);
