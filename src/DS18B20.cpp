@@ -23,7 +23,7 @@
 
 #include "DS18B20.h"
 
-DS18B20::DS18B20(char* address) {
+DS18B20::DS18B20(const char* address) {
 	address_ = strdup(address);
 	unit_ = CELCIUS;
 	snprintf(path, 46, "%s%s%s", BUS, address_, TEMPFILE);
